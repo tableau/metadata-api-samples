@@ -1,0 +1,104 @@
+#####
+## CustomSQL Samples - includes various Metadata API queries for understanding how CustomSQL is used on your site
+## Server Version: 2020.1 Beta
+#####
+
+
+query listCustomSQLTables {
+  ## Returns first 500 customSQLTables in this Site. 
+  ## Use 'offset' and script to fetch additional pages of results
+  customSQLTablesConnection(first: 500){
+    nodes {
+      
+      # This is the actual SQL Statement
+			query
+      name
+      
+			## Starting in 2020.1, the Database attribute will always
+			## be populated for CustomSQLTables, letting you figure out
+      ## which databases are being used for CustomSQL queries the most
+			database {
+        name
+        connectionType
+      }
+      
+      ## This refers to the actual database tables the query references
+			## This attribute will be empty if the Metadata API/Catalog SQL Parser
+      ## was unable to fully parse this SQL statement,. 
+      tables {
+        name
+      }
+    }
+  }
+}
+
+query listCustomSQLTablesAndParents {
+  ## Returns first 500 customSQLTables in this Site. 
+  ## Use 'offset' and script to fetch additional pages of results
+  customSQLTablesConnection(first: 500){
+    nodes {
+      # Un-comment the below to see the SQL statement
+      # query
+      name
+				
+			columns {
+        ## There are three paths under 'columns', each representing the different
+				## possibility of ownership. Option 1, a Flow owns this CustomSQLTable
+        ## Option 2, a Published Data Source owns it. Option 3, a Workbook owns it.
+        ## These options are mutually exclusive for a given CustomSQLTable. 
+        ## So only one of the three paths should terminate for a given SQLTable.
+        
+        # Option 1: Owned by a Flow
+        referencedByFlowColumnInputField {
+        	flow {
+            name
+            vizportalUrlId
+          }  
+        }
+        
+        
+        referencedByFields {
+          datasource {
+            ... on PublishedDatasource {
+    					# Option 2: Owned by a published data source
+							name 
+            }
+            
+            ... on EmbeddedDatasource {
+              workbook {
+                # Option 3: Owned by a workbook
+                name
+              }
+            }
+          }
+        }
+      }
+			
+    }
+  }
+}
+
+
+## You need to filter the results down outside of the Metadata API
+## to just those which have a "table.name" property filled
+query workbooksOwningCustomSQL {
+  workbooksConnection(first: 100) {
+    nodes {
+      name
+      embeddedDatasources {
+        fields {
+          ... on ColumnField {
+            columns {
+              table {
+                ... on CustomSQLTable {
+                  name
+                }
+
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
