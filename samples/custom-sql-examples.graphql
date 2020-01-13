@@ -102,3 +102,23 @@ query workbooksOwningCustomSQL {
     }
   }
 }
+
+
+## You need to filter the results down outside of the Metadata API
+## to just those which have a "table.name" property filled 
+query datasourceUsesCustomSQL {
+  publishedDatasources {
+    name
+    fields {
+      ... on ColumnField{
+        columns {
+          table {
+            ... on CustomSQLTable {
+              name
+            }  
+          }
+        }
+      }
+    }
+  }
+}
