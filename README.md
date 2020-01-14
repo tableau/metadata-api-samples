@@ -1,5 +1,5 @@
 # metadata-api-samples
-Samples of the Metadata API can be found in the `samples` directory. 
+Samples of the Metadata API can be found in the [samples](/samples/) directory. 
 
 ```
 └── samples
