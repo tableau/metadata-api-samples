@@ -26,7 +26,7 @@ def main():
     parser.add_argument('--username', '-u', required=True, help='username to sign into server')
     parser.add_argument('--logging-level', '-l', choices=['debug', 'info', 'error'], default='error',
                         help='desired logging level (set to error by default)')
-    parser.add_argument('--sitename', '-n', help='Sitename to process CustomSQL Statistics for')
+    parser.add_argument('--sitename', '-n', help='Sitename to process CustomSQL Statistics for. This is optional and defaults to the `Default` site')
 
     args = parser.parse_args()
 
@@ -50,7 +50,7 @@ def main():
         
         query = """
 { 
-customSQLTablesConnection(first: 50, after: AFTER_TOKEN_SIGNAL) {
+customSQLTablesConnection(first: 20, after: AFTER_TOKEN_SIGNAL) {
     nodes {
       id
       
@@ -115,21 +115,23 @@ customSQLTablesConnection(first: 50, after: AFTER_TOKEN_SIGNAL) {
         }
         """
         resp = server.metadata.query(totalCountsQuery)
-
         total_workbooks = resp['data']['total_workbooks_count']['totalCount']
         total_datasources = resp['data']['total_datasources_count']['totalCount']
 
-        print("--------------------------\nFinished processing CustomSQLTables on this site...")
-        print("Total # of CustomSQLTables on site={} and {} of them ({:.2f}%) were not parsed by Catalog".format(table_stats['num_tables_seen'], table_stats['num_failed_parse'], percentify(table_stats['num_failed_parse'] / table_stats['num_tables_seen'])))
-        print("Total # of Workbooks on Site={}".format(total_workbooks))
-        print("# of Workbooks using CustomSQL={} ({:.2f}% of total)".format(len(workbooks), percentify(len(workbooks) / total_workbooks)))
+        ## Outputting summary to customSQL-stats-summary.txt file
+        with open("./customSQL-stats-summary.txt", 'w', newline='') as file:
 
-        print("Total # of Published Data Sources on Site={}".format(total_datasources))
-        print("# of Published Data Sources using CustomSQL={} ({:.2f}% of total)".format(len(datasources), percentify(len(datasources) / total_datasources)))
+            print("--------------------------\nFinished processing CustomSQLTables on this site...", file=file)
+            print("Total # of CustomSQLTables on site={} and {} of them ({:.2f}%) were not parsed by Catalog".format(table_stats['num_tables_seen'], table_stats['num_failed_parse'], percentify(table_stats['num_failed_parse'] / table_stats['num_tables_seen'])), file=file)
+            print("Total # of Workbooks on Site={}".format(total_workbooks), file=file)
+            print("# of Workbooks using CustomSQL={} ({:.2f}% of total)".format(len(workbooks), percentify(len(workbooks) / total_workbooks)), file=file)
+
+            print("Total # of Published Data Sources on Site={}".format(total_datasources), file=file)
+            print("# of Published Data Sources using CustomSQL={} ({:.2f}% of total)".format(len(datasources), percentify(len(datasources) / total_datasources)), file=file)
 
 
-        ## wipe output file and then append stats to it.
-        filename='customSQL-stats.csv'
+        ## Outputting detaield data to CSV file
+        filename='./customSQL-stats.csv'
         with open(filename, 'w', newline='') as file:
             csv_writer = csv.writer(file)
 
@@ -138,6 +140,8 @@ customSQLTablesConnection(first: 50, after: AFTER_TOKEN_SIGNAL) {
 
             serialize_to_csv(csv_writer, workbooks, 'workbook')
             serialize_to_csv(csv_writer, datasources, 'published datasource') 
+
+
 
 # Serializes info to a CSV file 
 def serialize_to_csv(writer, collection, content_type):    
