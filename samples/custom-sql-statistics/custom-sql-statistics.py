@@ -1,8 +1,8 @@
 ####
-# This script demonstrates how to query the Metadata API using the Tableau
-# Server Client.
+# This script can be used for getting more information about CustomSQL prevelance on a Tableau Server/Site.
 #
-# To run the script, you must have installed Python 2.7.9 or later.
+# This script was written on Python 3.7.6 and was not tested to work on other versions of Python.
+# This script 
 ####
 
 
@@ -16,7 +16,7 @@ from datetime import time
 
 import tableauserverclient as TSC
 
-#Set the query https://help.tableau.com/current/api/metadata_api/en-us/docs/meta_api_examples.html
+#See more examples here https://help.tableau.com/current/api/metadata_api/en-us/docs/meta_api_examples.html
 
 
 
