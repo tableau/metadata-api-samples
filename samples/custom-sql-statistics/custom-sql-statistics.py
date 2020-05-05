@@ -200,27 +200,13 @@ def process_table_for_collection(table, object_id, collection):
         collection[object_id] = {}
         collection[object_id]['customSQLTables'] = {}
         collection[object_id]['customSQLTables'][table['id']] = {}
-        
-
-        ## formerly in extract_sql_table
-        collection[object_id]['customSQLTables'][table['id']]['sql_failed_to_parse'] = has_failed_sql(table)
-        collection[object_id]['customSQLTables'][table['id']]['query_string'] = table['query']
-        collection[object_id]['customSQLTables'][table['id']]['database_type'] = table['database']['connectionType']
-
-
-        # extract_sql_table_info(table, collection[object_id]['customSQLTables'][table['id']])
+        extract_sql_table_info(table, collection[object_id]['customSQLTables'][table['id']])
     else:
         if table['id'] in collection[object_id]['customSQLTables']:
             logging.debug('Seeing same CustomSQLTable twice. Skipping adding to dictionary. Table ID: {}'.format(table['id']))
         else:
             collection[object_id]['customSQLTables'][table['id']] = {}
-            
-            ## formerly in extract_sql_table
-            collection[object_id]['customSQLTables'][table['id']]['sql_failed_to_parse'] = has_failed_sql(table)
-            collection[object_id]['customSQLTables'][table['id']]['query_string'] = table['query']
-            collection[object_id]['customSQLTables'][table['id']]['database_type'] = table['database']['connectionType']
-            
-            # extract_sql_table_info(table, collection[object_id]['customSQLTables'][table['id']])
+            extract_sql_table_info(table, collection[object_id]['customSQLTables'][table['id']])
 
     logging.info("Processed table id={} and added to collection".format(table['id']))
 
