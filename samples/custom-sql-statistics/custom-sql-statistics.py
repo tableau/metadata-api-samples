@@ -122,12 +122,12 @@ customSQLTablesConnection(first: 20, after: AFTER_TOKEN_SIGNAL) {
         with open("./customSQL-stats-summary.txt", 'w', newline='') as file:
 
             print("--------------------------\nFinished processing CustomSQLTables on this site...", file=file)
-            print("Total # of CustomSQLTables on site={} and {} of them ({:.2f}%) were not parsed by Catalog".format(table_stats['num_tables_seen'], table_stats['num_failed_parse'], percentify(table_stats['num_failed_parse'] / table_stats['num_tables_seen'])), file=file)
+            print("Total # of CustomSQLTables on site={} and {} of them ({:.2f}%) were not parsed by Catalog".format(table_stats['num_tables_seen'], table_stats['num_failed_parse'], percentify(safe_divide(table_stats['num_failed_parse'], table_stats['num_tables_seen']))), file=file)
             print("Total # of Workbooks on Site={}".format(total_workbooks), file=file)
-            print("# of Workbooks using CustomSQL={} ({:.2f}% of total)".format(len(workbooks), percentify(len(workbooks) / total_workbooks)), file=file)
+            print("# of Workbooks using CustomSQL={} ({:.2f}% of total)".format(len(workbooks), percentify(safe_divide(len(workbooks), total_workbooks))), file=file)
 
             print("Total # of Published Data Sources on Site={}".format(total_datasources), file=file)
-            print("# of Published Data Sources using CustomSQL={} ({:.2f}% of total)".format(len(datasources), percentify(len(datasources) / total_datasources)), file=file)
+            print("# of Published Data Sources using CustomSQL={} ({:.2f}% of total)".format(len(datasources), percentify(safe_divide(len(datasources), total_datasources))), file=file)
 
 
         ## Outputting detaield data to CSV file
@@ -142,6 +142,8 @@ customSQLTablesConnection(first: 20, after: AFTER_TOKEN_SIGNAL) {
             serialize_to_csv(csv_writer, datasources, 'published datasource') 
 
 
+def safe_divide(num, denom):
+    return num / denom if denom else 0
 
 # Serializes info to a CSV file 
 def serialize_to_csv(writer, collection, content_type):    
@@ -209,12 +211,6 @@ def process_table_for_collection(table, object_id, collection):
             extract_sql_table_info(table, collection[object_id]['customSQLTables'][table['id']])
 
     logging.info("Processed table id={} and added to collection".format(table['id']))
-
-def test_extract(source_table_dict, collection, object_id):
-    
-    collection[object_id]['customSQLTables'][table['id']]['sql_failed_to_parse'] = has_failed_sql(source_table_dict)
-    collection[object_id]['customSQLTables'][table['id']]['query_string'] = source_table_dict['query']
-    collection[object_id]['customSQLTables'][table['id']]['database_type'] = source_table_dict['database']['connectionType']
 
 
 def extract_sql_table_info(source_table_dict, dest_table_dict):
