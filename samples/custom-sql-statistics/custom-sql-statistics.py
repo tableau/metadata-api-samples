@@ -102,6 +102,8 @@ customSQLTablesConnection(first: 20, after: AFTER_TOKEN_SIGNAL) {
 
             page_info = resp['data']['customSQLTablesConnection']['pageInfo']
 
+            print("--------------------------\n Processing update:")
+            print(table_stats)
             if page_info['hasNextPage']:
                 resp = server.metadata.query(query.replace('AFTER_TOKEN_SIGNAL', '"' + page_info['endCursor'] + '"'))
             else:
@@ -118,10 +120,12 @@ customSQLTablesConnection(first: 20, after: AFTER_TOKEN_SIGNAL) {
         total_workbooks = resp['data']['total_workbooks_count']['totalCount']
         total_datasources = resp['data']['total_datasources_count']['totalCount']
 
+
+        print("--------------------------\nFinished processing CustomSQLTables on this site... Writing to results files now")
+
         ## Outputting summary to customSQL-stats-summary.txt file
         with open("./customSQL-stats-summary.txt", 'w', newline='') as file:
-
-            print("--------------------------\nFinished processing CustomSQLTables on this site...", file=file)
+            
             print("Total # of CustomSQLTables on site={} and {} of them ({:.2f}%) were not parsed by Catalog".format(table_stats['num_tables_seen'], table_stats['num_failed_parse'], percentify(safe_divide(table_stats['num_failed_parse'], table_stats['num_tables_seen']))), file=file)
             print("Total # of Workbooks on Site={}".format(total_workbooks), file=file)
             print("# of Workbooks using CustomSQL={} ({:.2f}% of total)".format(len(workbooks), percentify(safe_divide(len(workbooks), total_workbooks))), file=file)
