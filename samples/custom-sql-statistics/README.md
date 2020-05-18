@@ -17,5 +17,13 @@ For best results, run this script as a site or server admin so that full query d
 
 Note that for a large server with a lot of CustomSQL usage, this script may take a long time to run since it needs to iterate through all content in the server through the Metadata API.
 
+
+## Requirements
+* Tableau Server version must be 2020.1 or greater.
+* Metadata Services must be enabled on the server: [Enable Metadata Services](https://help.tableau.com/current/server/en-us/dm_catalog_enable.htm#step6)
+* This script uses Python 3 and was tested on Python 3.7
+* This script relies on the [Tableau Server Client python library](https://github.com/tableau/server-client-python)
+
+
 ### Known limitations
 This script does not include CustomSQL used from Prep flows.

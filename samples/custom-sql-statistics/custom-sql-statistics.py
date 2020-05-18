@@ -10,6 +10,9 @@ import argparse
 import getpass
 import logging
 import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 import csv
 
 from datetime import time
@@ -40,7 +43,8 @@ def main():
     
     tableau_auth = TSC.TableauAuth(args.username, password, args.sitename)
     server = TSC.Server(args.server)
-    server.version = '3.3'
+    server.add_http_options({"verify": False})
+    server.use_server_version()
 
     with server.auth.sign_in(tableau_auth):
         logging.debug("Signed into Server")
