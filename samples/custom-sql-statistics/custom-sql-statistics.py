@@ -31,30 +31,40 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 def main():
     parser = argparse.ArgumentParser(description='Reports on Custom SQL statistics in the Catalog graph. Outputs data into CSV files for reporting.')
     parser.add_argument('--server', '-s', required=True, help='server address (include "http(s)://")')
-    parser.add_argument('--username', '-u', required=True, help='username to sign into server')
     parser.add_argument('--logging-level', '-l', choices=['debug', 'info', 'error'], default='error',
                         help='desired logging level (set to error by default)')
-    parser.add_argument('--sitename', '-n', help='Sitename to process Custom SQL Statistics for. This is optional and defaults to the `Default` site')
+    parser.add_argument('--sitename', '-site', default=None, help='Sitename (or contentURL) to process Custom SQL Statistics for. This is optional and defaults to the `Default` site. Go here for more information: https://tableau.github.io/server-client-python/docs/sign-in-out')
 
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--username', '-u', help='username to sign into server')
+    group.add_argument('--token-name', '-token', help='name of the personal access token used to sign into the server')
     args = parser.parse_args()
-
-    password = getpass.getpass("Password: ")
-
 
     # Set logging level based on user input, or error by default
     logging_level = getattr(logging, args.logging_level.upper())
     logging.basicConfig(level=logging_level)
 
-    
-    tableau_auth = TSC.TableauAuth(args.username, password, args.sitename)
+
     server = TSC.Server(args.server)
     server.add_http_options({"verify": False})
     server.use_server_version()
 
-    with server.auth.sign_in(tableau_auth):
-        logging.debug("Signed into Server")
-        
-        query = """
+    if args.username:
+        ## Sign in with UN/Pass
+        password = getpass.getpass("Password: ")
+        tableau_auth = TSC.TableauAuth(args.username, password, args.sitename)
+        server.auth.sign_in(tableau_auth)
+
+    else:
+        ## Sign in with personal access token
+        personal_access_token = input("Personal Access Token: ")
+        tableau_auth = TSC.PersonalAccessTokenAuth(token_name=args.token_name, personal_access_token=personal_access_token, site_id=args.sitename)
+        server.auth.sign_in_with_personal_access_token(tableau_auth)
+       
+
+    logging.debug("Signed into Server")
+    
+    query = """
 { 
 customSQLTablesConnection(first: 20, after: AFTER_TOKEN_SIGNAL) {
     nodes {
@@ -98,61 +108,62 @@ customSQLTablesConnection(first: 20, after: AFTER_TOKEN_SIGNAL) {
   }
 }
 """
-        print("--------------------------\nBeginning to query information about Custom SQL ables on this site...")
-        resp = server.metadata.query(query.replace('AFTER_TOKEN_SIGNAL', 'null'))
-        workbooks = {}
-        datasources = {}
-        table_stats = {'num_no_columns': 0, 'num_no_database': 0, 'num_no_workbooks_or_ds_connected': 0, 'num_tables_seen': 0, 'num_failed_parse': 0, 'num_no_connected_tables':0}
-        while True:
-            process_page(resp, workbooks, datasources, table_stats)
+    print("--------------------------\nBeginning to query information about Custom SQL ables on this site...")
+    resp = server.metadata.query(query.replace('AFTER_TOKEN_SIGNAL', 'null'))
+    workbooks = {}
+    datasources = {}
+    table_stats = {'num_no_columns': 0, 'num_no_database': 0, 'num_no_workbooks_or_ds_connected': 0, 'num_tables_seen': 0, 'num_failed_parse': 0, 'num_no_connected_tables':0}
+    while True:
+        process_page(resp, workbooks, datasources, table_stats)
 
-            page_info = resp['data']['customSQLTablesConnection']['pageInfo']
+        page_info = resp['data']['customSQLTablesConnection']['pageInfo']
 
-            print("--------------------------\n Processing update:")
-            print(table_stats)
-            if page_info['hasNextPage']:
-                resp = server.metadata.query(query.replace('AFTER_TOKEN_SIGNAL', '"' + page_info['endCursor'] + '"'))
-            else:
-                break
+        print("--------------------------\n Processing update:")
+        print(table_stats)
+        if page_info['hasNextPage']:
+            resp = server.metadata.query(query.replace('AFTER_TOKEN_SIGNAL', '"' + page_info['endCursor'] + '"'))
+        else:
+            break
 
+    
 
-        total_skipped = table_stats['num_no_columns'] + table_stats['num_no_database'] + table_stats['num_no_workbooks_or_ds_connected']
-        logging.debug("{} Custom SQL tables were skipped due to unexpected data".format(total_skipped))
-        totalCountsQuery = """
-        {
-        total_workbooks_count: workbooksConnection { totalCount }
-        total_datasources_count: publishedDatasourcesConnection { totalCount }
-        }
-        """
-        resp = server.metadata.query(totalCountsQuery)
-        total_workbooks = resp['data']['total_workbooks_count']['totalCount']
-        total_datasources = resp['data']['total_datasources_count']['totalCount']
-
-
-        print("--------------------------\nFinished processing Custom SQL tables on this site... Writing to results files now")
-
-        ## Outputting summary to customSQL-stats-summary.txt file
-        with open("./customSQL-stats-summary.txt", 'w', newline='') as file:
-            
-            print(table_stats, file=file)
-            print("Total # of Custom SQL tables on site={} and {} of them ({:.2f}%) were not parsed by Catalog".format(table_stats['num_tables_seen'], table_stats['num_failed_parse'], percentify(safe_divide(table_stats['num_failed_parse'], table_stats['num_tables_seen']))), file=file)
-            print("Total # of Workbooks on Site={}".format(total_workbooks), file=file)
-            print("# of Workbooks using Custom SQL={} ({:.2f}% of total)".format(len(workbooks), percentify(safe_divide(len(workbooks), total_workbooks))), file=file)
-
-            print("Total # of Published Data Sources on Site={}".format(total_datasources), file=file)
-            print("# of Published Data Sources using Custom SQL={} ({:.2f}% of total)".format(len(datasources), percentify(safe_divide(len(datasources), total_datasources))), file=file)
+    total_skipped = table_stats['num_no_columns'] + table_stats['num_no_database'] + table_stats['num_no_workbooks_or_ds_connected']
+    logging.debug("{} Custom SQL tables were skipped due to unexpected data".format(total_skipped))
+    totalCountsQuery = """
+    {
+    total_workbooks_count: workbooksConnection { totalCount }
+    total_datasources_count: publishedDatasourcesConnection { totalCount }
+    }
+    """
+    resp = server.metadata.query(totalCountsQuery)
+    total_workbooks = resp['data']['total_workbooks_count']['totalCount']
+    total_datasources = resp['data']['total_datasources_count']['totalCount']
 
 
-        ## Outputting detaield data to CSV file
-        filename='./customSQL-stats.csv'
-        with open(filename, 'w', newline='') as file:
-            csv_writer = csv.writer(file)
+    print("--------------------------\nFinished processing Custom SQL tables on this site... Writing to results files now")
 
-            columnHeaders = ['parent_content_type', 'parent_content_graph_id', 'custom_sql_graph_id', 'sql_failed_to_parse', 'query_string', 'database_type']
-            csv_writer.writerow(columnHeaders)
+    ## Outputting summary to customSQL-stats-summary.txt file
+    with open("./customSQL-stats-summary.txt", 'w', newline='') as file:
+        
+        print(table_stats, file=file)
+        print("Total # of Custom SQL tables on site={} and {} of them ({:.2f}%) were not parsed by Catalog".format(table_stats['num_tables_seen'], table_stats['num_failed_parse'], percentify(safe_divide(table_stats['num_failed_parse'], table_stats['num_tables_seen']))), file=file)
+        print("Total # of Workbooks on Site={}".format(total_workbooks), file=file)
+        print("# of Workbooks using Custom SQL={} ({:.2f}% of total)".format(len(workbooks), percentify(safe_divide(len(workbooks), total_workbooks))), file=file)
 
-            serialize_to_csv(csv_writer, workbooks, 'workbook')
-            serialize_to_csv(csv_writer, datasources, 'published datasource') 
+        print("Total # of Published Data Sources on Site={}".format(total_datasources), file=file)
+        print("# of Published Data Sources using Custom SQL={} ({:.2f}% of total)".format(len(datasources), percentify(safe_divide(len(datasources), total_datasources))), file=file)
+
+
+    ## Outputting detaield data to CSV file
+    filename='./customSQL-stats.csv'
+    with open(filename, 'w', newline='') as file:
+        csv_writer = csv.writer(file)
+
+        columnHeaders = ['parent_content_type', 'parent_content_graph_id', 'custom_sql_graph_id', 'sql_failed_to_parse', 'query_string', 'database_type']
+        csv_writer.writerow(columnHeaders)
+
+        serialize_to_csv(csv_writer, workbooks, 'workbook')
+        serialize_to_csv(csv_writer, datasources, 'published datasource') 
 
 
 def safe_divide(num, denom):
