@@ -2,7 +2,6 @@
 # This script can be used for getting more information about Custom SQL prevelance on a Tableau Server/Site.
 #
 # This script was written on Python 3.7.6 and was not tested to work on other versions of Python.
-# This script 
 ####
 
 
@@ -10,14 +9,20 @@ import argparse
 import getpass
 import logging
 import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 import csv
-
 from datetime import time
-
 import tableauserverclient as TSC
+
+
+### The below two lines are to suppress SSL warnings. Oftentimes this script is used
+### on servers within a corporate firewall that have their own self-signed SSL certificates. 
+### Those self-signed tickets will throw errors without this suppression. Comment out these lines
+### if you do not want to suppress SSL warnings, comment out these lines.
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+
+
 
 #See more examples here https://help.tableau.com/current/api/metadata_api/en-us/docs/meta_api_examples.html
 
@@ -48,9 +53,6 @@ def main():
 
     with server.auth.sign_in(tableau_auth):
         logging.debug("Signed into Server")
-
-        # resp = server.metadata.query(query)
-        #Query the Metadata API and store the response in resp
         
         query = """
 { 
