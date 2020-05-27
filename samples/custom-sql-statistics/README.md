@@ -15,7 +15,7 @@ The scripts results will be outputted to two files `customSQL-stats-summary.txt`
 
 For best results, run this script as a site or server admin so that full query data can be returned. If run as a non-admin, the `query_string` examples may be blank due to permissions.
 
-Note that for a large server with a lot of CustomSQL usage, this script may take a long time to run since it needs to iterate through all content in the server through the Metadata API.
+Note that for a large server with a lot of Custom SQL usage, this script may take a long time to run since it needs to iterate through all content in the server through the Metadata API.
 
 
 ## Requirements
