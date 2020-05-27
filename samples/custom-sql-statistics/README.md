@@ -1,9 +1,9 @@
 # Overview  
 
-The custom-sql-statistics python script uses the Metadata API to find how much CustomSQL is used on a Tableau Site. It will report statistics of what percentage of Workbooks and Data Sources are using CustomSQL. It also tracks how many CustomSQL queries were not accepted/supported by the Catalog lineage parser. Please refer to the [official documentation for Catalog's support for CustomSQL](https://help.tableau.com/current/pro/desktop/en-us/customsql.htm#tableau-catalog-support-for-custom-sql) for more information on what SQL is intended to be supported by Catalog.
+The custom-sql-statistics python script uses the Metadata API to find how much Custom SQL is used on a Tableau Site. It will report statistics of what percentage of Workbooks and Data Sources are using Custom SQL. It also tracks how many Custom SQL queries were not accepted/supported by the Catalog lineage parser. Please refer to the [official documentation for Catalog's support for Custom SQL](https://help.tableau.com/current/pro/desktop/en-us/customsql.htm#tableau-catalog-support-for-custom-sql) for more information on what SQL is intended to be supported by Catalog.
 
 This script reports its statistics in two ways:
-1. Outputs a brief summary of how much CustomSQL is on the site and how much was supported. This will be outputted to `customSQL-stats-summary.txt`.
+1. Outputs a brief summary of how much Custom SQL is on the site and how much was supported. This will be outputted to `customSQL-stats-summary.txt`.
 2. Outputs data to `customSQL-stats.csv` that can be used for deeper analysis. **Note:** This format includes the actual SQL queries text included in the Data Source or Workbook (it does not include any data returned by the query, just the SQL used.)
 
 ## Instructions for use
@@ -26,4 +26,4 @@ Note that for a large server with a lot of CustomSQL usage, this script may take
 
 
 ### Known limitations
-This script does not include CustomSQL used from Prep flows.
+This script does not include Custom SQL used from Prep flows.
