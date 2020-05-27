@@ -1,5 +1,5 @@
 ####
-# This script can be used for getting more information about CustomSQL prevelance on a Tableau Server/Site.
+# This script can be used for getting more information about Custom SQL prevelance on a Tableau Server/Site.
 #
 # This script was written on Python 3.7.6 and was not tested to work on other versions of Python.
 # This script 
@@ -24,12 +24,12 @@ import tableauserverclient as TSC
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Reports on CustomSQL statistics in the Catalog graph. Outputs data into CSV files for reporting.')
+    parser = argparse.ArgumentParser(description='Reports on Custom SQL statistics in the Catalog graph. Outputs data into CSV files for reporting.')
     parser.add_argument('--server', '-s', required=True, help='server address (include "http(s)://")')
     parser.add_argument('--username', '-u', required=True, help='username to sign into server')
     parser.add_argument('--logging-level', '-l', choices=['debug', 'info', 'error'], default='error',
                         help='desired logging level (set to error by default)')
-    parser.add_argument('--sitename', '-n', help='Sitename to process CustomSQL Statistics for. This is optional and defaults to the `Default` site')
+    parser.add_argument('--sitename', '-n', help='Sitename to process Custom SQL Statistics for. This is optional and defaults to the `Default` site')
 
     args = parser.parse_args()
 
@@ -96,7 +96,7 @@ customSQLTablesConnection(first: 20, after: AFTER_TOKEN_SIGNAL) {
   }
 }
 """
-        print("--------------------------\nBeginning to query information about CustomSQLTables on this site...")
+        print("--------------------------\nBeginning to query information about Custom SQL ables on this site...")
         resp = server.metadata.query(query.replace('AFTER_TOKEN_SIGNAL', 'null'))
         workbooks = {}
         datasources = {}
@@ -115,7 +115,7 @@ customSQLTablesConnection(first: 20, after: AFTER_TOKEN_SIGNAL) {
 
 
         total_skipped = table_stats['num_no_columns'] + table_stats['num_no_database'] + table_stats['num_no_workbooks_or_ds_connected']
-        logging.debug("{} CustomSQLTables were skipped due to unexpected data".format(total_skipped))
+        logging.debug("{} Custom SQL tables were skipped due to unexpected data".format(total_skipped))
         totalCountsQuery = """
         {
         total_workbooks_count: workbooksConnection { totalCount }
@@ -127,18 +127,18 @@ customSQLTablesConnection(first: 20, after: AFTER_TOKEN_SIGNAL) {
         total_datasources = resp['data']['total_datasources_count']['totalCount']
 
 
-        print("--------------------------\nFinished processing CustomSQLTables on this site... Writing to results files now")
+        print("--------------------------\nFinished processing Custom SQL tables on this site... Writing to results files now")
 
         ## Outputting summary to customSQL-stats-summary.txt file
         with open("./customSQL-stats-summary.txt", 'w', newline='') as file:
             
             print(table_stats, file=file)
-            print("Total # of CustomSQLTables on site={} and {} of them ({:.2f}%) were not parsed by Catalog".format(table_stats['num_tables_seen'], table_stats['num_failed_parse'], percentify(safe_divide(table_stats['num_failed_parse'], table_stats['num_tables_seen']))), file=file)
+            print("Total # of Custom SQL tables on site={} and {} of them ({:.2f}%) were not parsed by Catalog".format(table_stats['num_tables_seen'], table_stats['num_failed_parse'], percentify(safe_divide(table_stats['num_failed_parse'], table_stats['num_tables_seen']))), file=file)
             print("Total # of Workbooks on Site={}".format(total_workbooks), file=file)
-            print("# of Workbooks using CustomSQL={} ({:.2f}% of total)".format(len(workbooks), percentify(safe_divide(len(workbooks), total_workbooks))), file=file)
+            print("# of Workbooks using Custom SQL={} ({:.2f}% of total)".format(len(workbooks), percentify(safe_divide(len(workbooks), total_workbooks))), file=file)
 
             print("Total # of Published Data Sources on Site={}".format(total_datasources), file=file)
-            print("# of Published Data Sources using CustomSQL={} ({:.2f}% of total)".format(len(datasources), percentify(safe_divide(len(datasources), total_datasources))), file=file)
+            print("# of Published Data Sources using Custom SQL={} ({:.2f}% of total)".format(len(datasources), percentify(safe_divide(len(datasources), total_datasources))), file=file)
 
 
         ## Outputting detaield data to CSV file
