@@ -100,7 +100,7 @@ customSQLTablesConnection(first: 20, after: AFTER_TOKEN_SIGNAL) {
         resp = server.metadata.query(query.replace('AFTER_TOKEN_SIGNAL', 'null'))
         workbooks = {}
         datasources = {}
-        table_stats = {'num_skipped': 0, 'num_tables_seen': 0, 'num_failed_parse': 0}
+        table_stats = {'num_no_columns': 0, 'num_no_database': 0, 'num_no_workbooks_or_ds_connected': 0, 'num_tables_seen': 0, 'num_failed_parse': 0, 'num_no_connected_tables':0}
         while True:
             process_page(resp, workbooks, datasources, table_stats)
 
@@ -113,7 +113,9 @@ customSQLTablesConnection(first: 20, after: AFTER_TOKEN_SIGNAL) {
             else:
                 break
 
-        logging.debug("{} CustomSQLTables were skipped due to unexpected data".format(table_stats['num_skipped']))
+
+        total_skipped = table_stats['num_no_columns'] + table_stats['num_no_database'] + table_stats['num_no_workbooks_or_ds_connected']
+        logging.debug("{} CustomSQLTables were skipped due to unexpected data".format(total_skipped))
         totalCountsQuery = """
         {
         total_workbooks_count: workbooksConnection { totalCount }
@@ -130,6 +132,7 @@ customSQLTablesConnection(first: 20, after: AFTER_TOKEN_SIGNAL) {
         ## Outputting summary to customSQL-stats-summary.txt file
         with open("./customSQL-stats-summary.txt", 'w', newline='') as file:
             
+            print(table_stats, file=file)
             print("Total # of CustomSQLTables on site={} and {} of them ({:.2f}%) were not parsed by Catalog".format(table_stats['num_tables_seen'], table_stats['num_failed_parse'], percentify(safe_divide(table_stats['num_failed_parse'], table_stats['num_tables_seen']))), file=file)
             print("Total # of Workbooks on Site={}".format(total_workbooks), file=file)
             print("# of Workbooks using CustomSQL={} ({:.2f}% of total)".format(len(workbooks), percentify(safe_divide(len(workbooks), total_workbooks))), file=file)
@@ -175,6 +178,35 @@ def percentify(decimal):
     return decimal * 100
 
 
+## Used to check if the JSON returned for this CustomSQL Table matches
+## all of the expectations. Some tables are returned malformatted due to ingestion errors or delays.
+## Returns true if the table can be processed, false if it should be skipped.
+def can_process_table(customSQLTable, table_stats):
+    if len(customSQLTable['columns']) == 0:
+        logging.debug("Table {} has no columns and will be skipped".format(customSQLTable['id']))
+        table_stats['num_no_columns'] += 1
+        return False
+
+    if len(customSQLTable['columns'][0]['workbooks_directly_connected']) == 0 and len(customSQLTable['columns'][0]['datasources_directly_connected']) == 0:
+        logging.debug("Table {} has nothing in either `workbooks_directly_connected` or `datasources_directly_connected`, so it will be skipped".format(customSQLTable['id']))
+        table_stats['num_no_workbooks_or_ds_connected'] += 1
+        return False
+
+
+    if ('database' not in customSQLTable) or customSQLTable['database'] == None:
+        logging.debug("Table {} is missing the database reference and will be skipped".format(customSQLTable['id']))
+        table_stats['num_no_database'] += 1
+        return False
+
+    if customSQLTable['tables'] == None:
+        logging.debug("Table {} has None for tables directly referenced and will be skipped".format(customSQLTable['id']))
+        table_stats['num_no_connected_tables'] += 1
+        return False
+
+    return True
+
+
+
 def process_page(response, workbooks, datasources, table_stats):
     customSQLTables = response['data']['customSQLTablesConnection']['nodes']
 
@@ -182,21 +214,14 @@ def process_page(response, workbooks, datasources, table_stats):
         table_stats['num_tables_seen'] += 1
         table_stats['num_failed_parse'] += 1 if has_failed_sql(table) else 0
 
-        if len(table['columns']) == 0:
-            logging.debug("Table {} has no columns and will be skipped".format(table['id']))
-            table_stats['num_skipped'] += 1
+        if not can_process_table(table, table_stats):
             continue
 
-        if len(table['columns'][0]['workbooks_directly_connected']) == 0:
-            logging.debug("Table {} has nothing in `workbooks_directly_connected` and will be skipped".format(table['id']))
-            table_stats['num_skipped'] += 1
-            continue
 
         ## this is CustomSQLTable connecting to a WB
         if bool(table['columns'][0]['workbooks_directly_connected'][0]['datasource']):
             object_id = table['columns'][0]['workbooks_directly_connected'][0]['datasource']['workbook']['id']
             process_table_for_collection(table, object_id, workbooks)
-
         ## This is a CustomSQLTable connecting to a PDS
         else:
             object_id = table['columns'][0]['datasources_directly_connected'][0]['datasource']['id']
