@@ -154,9 +154,9 @@ customSQLTablesConnection(first: 20, after: AFTER_TOKEN_SIGNAL) {
         print("# of Published Data Sources using Custom SQL={} ({:.2f}% of total)".format(len(datasources), percentify(safe_divide(len(datasources), total_datasources))), file=file)
 
 
-    ## Outputting detaield data to CSV file
+    ## Outputting data to CSV file
     filename='./customSQL-stats.csv'
-    with open(filename, 'w', newline='') as file:
+    with open(filename, 'w', newline='', encoding='utf-8') as file:
         csv_writer = csv.writer(file)
 
         columnHeaders = ['parent_content_type', 'parent_content_graph_id', 'custom_sql_graph_id', 'sql_failed_to_parse', 'query_string', 'database_type']
