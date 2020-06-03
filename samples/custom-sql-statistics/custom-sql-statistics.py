@@ -180,7 +180,8 @@ def serialize_to_csv(writer, collection, content_type):
             new_row.append(content_item_id)
             new_row.append(cust_sql_table_id)
             new_row.append(cust_sql_table['sql_failed_to_parse'])
-            new_row.append(cust_sql_table['query_string'])
+            sql = replace_newlines(cust_sql_table['query_string'])
+            new_row.append(sql)
             new_row.append(cust_sql_table['database_type'])
 
             writer.writerow(new_row)
@@ -189,6 +190,15 @@ def serialize_to_csv(writer, collection, content_type):
 
 def percentify(decimal):
     return decimal * 100
+
+### Returns string where newline patterns are replaced with a triple tab
+### so that Tableau's CSV connector connects to the output file more easily.
+def replace_newlines(sqlstring):
+    sql = sqlstring.replace('\r\n', '\t\t\t')
+    sql = sql.replace('\n', '\t\t\t')
+    sql = sql.replace('\r', '\t\t\t')
+
+    return sql
 
 
 ## Used to check if the JSON returned for this CustomSQL Table matches
