@@ -1,0 +1,12 @@
+#####
+## <sample_name>: <description of sample, what the sample includes, and questions or scenarios it addresses>
+## Tableau Server/Tableau Online version: <version>
+#####
+
+
+query <query_name>{
+  ## <description of what this query does>
+  ## <additional information to help understand the query>
+  <object_to_query>{
+  }
+}
