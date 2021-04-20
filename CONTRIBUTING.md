@@ -7,7 +7,7 @@ This project is used to share samples of using the Metadata API. Contributions t
 
 Contributions will be approved via pull-request from a Tableau maintainer of this repository.
 
-**Note:** Contributions must follow the guidelines outlined on the Tableau's [Contributing to Tableau Projects](http://tableau.github.io/contributing.html) page, though filing an issue or requesting a new sample does not require the CLA.
+**Note:** Contributions must follow the guidelines outlined on the Tableau's [Contributing Code to Tableau Projects](http://tableau.github.io/contributing.html) page, though filing an issue or requesting a new sample does not require the CLA.
 
 ## Sample formats
 There are two main formats for samples in this project: simple and advanced. 
