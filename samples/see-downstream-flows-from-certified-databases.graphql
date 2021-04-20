@@ -1,0 +1,36 @@
+#####
+## see-downstream-flows-from-certified-datbases: This query returns a list of certified databases 
+## and their downstream flows. A secondary query returns a list of certified data sources and their
+## downstream flows.
+## Tableau Server/Tableau Online version: Tableau 2021.1
+#####
+
+### Here's the query
+query databases_certified {
+    ##Downstream flows when datbases are certified
+  databases(filter: {isCertified: true}) {
+    luid
+    name
+    connectionType
+    isCertified,
+    downstreamFlows(filter: []) {
+      id
+      name
+    }    
+  }
+}
+
+### Bonus query! 
+query datasources_certified {
+    #Downstream flows when data sources are certified
+  publishedDatasources(filter: {isCertified: true}) {
+    name
+    luid
+    description   
+    isCertified    
+    downstreamFlows {
+      id
+      name
+    }
+  }
+}
