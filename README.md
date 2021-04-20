@@ -1,5 +1,5 @@
 # About metadata-api-samples
-Samples of the Metadata API can be found in the [samples](/samples/) directory. 
+Samples of the Tableau Metadata API can be found in the [samples](/samples/) directory. 
 
 ```
 └── samples
