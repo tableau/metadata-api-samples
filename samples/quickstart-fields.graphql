@@ -1,0 +1,35 @@
+#####
+## quickstart-fields: A couple of queries about fields.
+## Tableau Server/Tableau Online version: Tableau 2021.1
+#####
+
+### Query 1
+query fields {
+  fields {
+    id
+    name
+    isHidden
+    folderName
+    datasource {
+  		id
+    }
+  }
+}
+### Query 2
+query fieldsConnection {
+  fieldsConnection(first : 20000) {
+    nodes {
+      id
+      name
+      isHidden
+      folderName
+      datasource {
+        id
+      }
+    }
+    pageInfo {
+      endCursor
+    }
+    totalCount
+  }
+}
