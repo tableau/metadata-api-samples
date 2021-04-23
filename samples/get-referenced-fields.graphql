@@ -1,0 +1,41 @@
+#####
+## get-referenced-fields: The primary query returns a table's columns used in a workbook, data source, or flow. 
+## Tableau Server/Tableau Online version: Tableau 2021.1 
+#####
+
+### Primary query
+  tablesConnection (first: 5) {
+    nodes {
+      columns {
+        name
+        id
+        referencedByFields {
+          # The columns returned by this attribute are fields directlying referencing the column, "columnField."
+          # The columns are 1:1 fields that a workbook or data source creates.
+          name
+          referencedByFields {
+            # This attribute is used to capture results such as calculated and analytics fields. 
+            ... on Field {
+              name
+              # You may need to repeat this using specific a specific attribute type. 
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+### Secondary query
+tablesConnection (first: 5) {
+    nodes {
+        columns {
+            name
+            id
+            # A simplified way to evaluate columns used, but may exlude certain results such as calcuatled fields. 
+            downstreamFields{
+                name
+            }
+        }
+    }
+}

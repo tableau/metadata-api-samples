@@ -1,0 +1,30 @@
+#####
+## quickstart-published-datasources: A query about published data sources.
+## Tableau Server/Tableau Online version: Tableau 2021.1
+#####
+
+query published_datasources {
+  publishedDatasources {
+    id
+    luid
+    name
+    hasUserReference
+    hasExtracts
+    extractLastRefreshTime
+    site{
+    	luid
+    }
+    projectName
+    projectVizportalUrlId
+    owner{
+      luid
+    }
+    isCertified
+    certifier {
+      luid
+    }
+    certificationNote
+    certifierDisplayName
+    description
+  }
+}

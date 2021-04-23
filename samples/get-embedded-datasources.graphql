@@ -1,0 +1,31 @@
+#####
+## get-embedded-datasources: The primary query returns embedded data sources. 
+## Note: If a workbook uses a published data source, by default, it also 
+## includes an embedded data source object that is effectively a copy of 
+## the published data source. To confirm whether an embedded data source 
+## is a published data source, run the secondary query. If the query returns 
+## a data source name identical to the data source name returned by the 
+## primary query, then the data source is a published data source and not 
+## an embedded data source only.
+## Tableau Server/Tableau Online version: Tableau 2021.1
+#####
+
+### Primary query
+query get_embedded_datasources {
+  workbooks {
+    name
+    embeddedDatasources {
+      name
+    }
+  }
+}
+
+### Secondary query
+query get_published_datasources {
+  publishedDatasources {
+    name
+    downstreamWorkbooks {
+      name
+    }
+  }
+}

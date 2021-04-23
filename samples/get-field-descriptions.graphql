@@ -1,0 +1,32 @@
+#####
+## get-field-descriptions: This query returns a field's inherited description. 
+## Tableau Server/Tableau Online version: Tableau 2021.2 beta
+#####
+
+query description_of_fields {
+  fields {
+    id
+    name
+    description
+    descriptionInherited(inheritanceType:FIRST) {
+      value
+      distance
+      asset {
+        id
+        __typename
+        ... on Column {
+          name
+          table {
+            name
+          }
+        }
+        ... on Field {
+          name
+          datasource {
+            name
+          }
+        }
+      }
+    }
+  }
+}
