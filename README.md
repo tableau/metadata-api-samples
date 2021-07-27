@@ -4,7 +4,19 @@ Samples of the Tableau Metadata API can be found in the [samples](/samples/) dir
 ```
 └── samples
     ├── custom-sql-examples.graphql
-    └── metadata-api-with-python-and-TSC.py
+    ├── get-downstream-flows-from-certified-databases.graphql
+    ├── get-embedded-datasources.graphql
+    ├── get-embedded-extracts-in-workbooks.graphql
+    ├── get-field-descriptions.graphql
+    ├── get-path-for-file-based-extract.graphql
+    ├── metadata-api-with-python-and-TSC.py
+    ├── quickstart-dashboards.graphql
+    ├── quickstart-fields.graphql
+    ├── quickstart-published-datasources.graphql
+    ├── quickstart-sheets.graphql
+    ├── quickstart-tables.graphql
+    ├── quickstart-workbooks.graphql
+    └── template.graphql
 ```
 
 ### Getting Started
