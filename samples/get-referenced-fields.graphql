@@ -1,9 +1,9 @@
 #####
 ## get-referenced-fields: The primary query returns a table's columns used in a workbook, data source, or flow. 
-## Tested with Tableau Server/Tableau Online version: Tableau 2021.1 
+## Tested with Tableau Server/Tableau Online version: Tableau 2021.3 
 #####
-
 ### Primary query
+query primary_query{
   tablesConnection (first: 5) {
     nodes {
       columns {
@@ -25,17 +25,18 @@
     }
   }
 }
-
 ### Secondary query
-tablesConnection (first: 5) {
+query secondary_query{
+  tablesConnection (first: 5) {
     nodes {
-        columns {
-            name
-            id
-            # A simplified way to evaluate columns used, but may exlude certain results such as calcuatled fields. 
-            downstreamFields{
-                name
-            }
-        }
+       columns {
+           name
+           id
+           # A simplified way to evaluate columns used, but may exlude certain results such as calcuatled fields. 
+           downstreamFields{
+              name
+           }
+       }
     }
+  }
 }
