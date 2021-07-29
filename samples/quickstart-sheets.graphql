@@ -1,6 +1,6 @@
 #####
 ## quickstart-sheets: A query about sheets.
-## Tableau Server/Tableau Online version: Tableau 2021.1
+## Tested with Tableau Server/Tableau Online version: Tableau 2021.1
 #####
 
 query sheets {
