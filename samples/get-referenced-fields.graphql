@@ -1,6 +1,6 @@
 #####
 ## get-referenced-fields: The primary query returns a table's columns used in a workbook, data source, or flow. 
-## Tableau Server/Tableau Online version: Tableau 2021.1 
+## Tested with Tableau Server/Tableau Online version: Tableau 2021.1 
 #####
 
 ### Primary query
