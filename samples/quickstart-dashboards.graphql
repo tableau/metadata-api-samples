@@ -1,6 +1,6 @@
 #####
 ## quickstart-dashboards: A query about dashboards.
-## Tableau Server/Tableau Online version: Tableau 2021.1
+## Tested with Tableau Server/Tableau Online version: Tableau 2021.1
 #####
 
 query dashboards{ 
