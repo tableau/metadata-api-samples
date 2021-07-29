@@ -2,7 +2,7 @@
 ## get-path-for-file-based-extracts: This query returns a list of file-based 
 ## connections. You can use the results to evaluate which are extracts
 ## (i.e., uses .hyper extension) and their paths.
-## Tableau Server/Tableau Online version: Tableau 2021.1
+## Tested with Tableau Server/Tableau Online version: Tableau 2021.1
 #####
 
  query get_path {
