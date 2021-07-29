@@ -7,7 +7,7 @@
 ## a data source name identical to the data source name returned by the 
 ## primary query, then the data source is a published data source and not 
 ## an embedded data source only.
-## Tableau Server/Tableau Online version: Tableau 2021.1
+## Tested with Tableau Server/Tableau Online version: Tableau 2021.1
 #####
 
 ### Primary query
