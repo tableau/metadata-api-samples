@@ -1,10 +1,9 @@
 #####
 ## quickstart-fields: A few queries about fields.
-## Tested with Tableau Server/Tableau Online version: Tableau 2021.1
+## Tested with Tableau Server/Tableau Online version: Tableau 2021.3
 #####
-
 ### Query 1
-query fields {
+query fields{
   fields {
     id
     name
@@ -16,7 +15,7 @@ query fields {
   }
 }
 ### Query 2 - returns the first 1000 results
-query fieldsConnection_first1000 {
+query fieldsConnection_first1000{
   fieldsConnection(first : 1000) {
     nodes {
       id
@@ -35,7 +34,7 @@ query fieldsConnection_first1000 {
 }
 
 ### Query 3 - returns a cursor from the last item and uses it to paginate the next page of results
-query fieldsConnection_first {
+query fieldsConnection_first{
   fieldsConnection(first : 999, after: "eyJ0eXBlIjoiRmllbGQiLCJzY29wZSI6InNpdGVzLzM4NSIsInNvcnRPcmRlclZhbHVlIjp7Imxhc3RJZCI6IjBhYWMwNzczLWQ3MjQtZWY3Ny0zYjllLTM1YTg3OGJjMWU4OCJ9fQ==") {
     nodes {
       id
