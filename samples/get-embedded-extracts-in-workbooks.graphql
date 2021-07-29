@@ -3,19 +3,17 @@
 ## that use embedded extract data sources. You can use the secondary 
 ## query, usig the IDs returned form from the primary query, to 
 ## identify workbooks that use those embedded extract data sources.
-## Tested with Tableau Server/Tableau Online version: Tableau 2021.1 
+## Tested with Tableau Server/Tableau Online version: Tableau 2021.3
 #####
-
 ### Primary query
-query extract_datasources_embedded {
+query extract_datasources_embedded{
   embeddedDatasources {
     hasExtracts
     id
   }
 }
-
 ### Secondary query
-query extract_datasources_in_workbooks {
+query extract_datasources_in_workbooks{
   embeddedDatasources(filter: {idWithin: ["<id_1_from_primary_query","<id_2_from_primary_query>","<id_3_from_primary_query"]}) {
     workbook {
       luid
