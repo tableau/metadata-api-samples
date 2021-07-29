@@ -1,10 +1,9 @@
 #####
 ## quickstart-workbooks: A query about workbooks.
-## Tested with Tableau Server/Tableau Online version: Tableau 2021.1
+## Tested with Tableau Server/Tableau Online version: Tableau 2021.3
 #####
-
-query workbooks {
-    workbooks{
+query workbooks{
+    workbooks {
         id
         luid
         name
@@ -25,4 +24,4 @@ query workbooks {
             name
             }
         }
-    }  
+    }
