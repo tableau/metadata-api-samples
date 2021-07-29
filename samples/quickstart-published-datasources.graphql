@@ -1,9 +1,8 @@
 #####
 ## quickstart-published-datasources: A query about published data sources.
-## Tested with Tableau Server/Tableau Online version: Tableau 2021.1
+## Tested with Tableau Server/Tableau Online version: Tableau 2021.3
 #####
-
-query published_datasources {
+query published_datasources{
   publishedDatasources {
     id
     luid
