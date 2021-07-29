@@ -1,8 +1,7 @@
 #####
 ## quickstart-dashboards: A query about dashboards.
-## Tested with Tableau Server/Tableau Online version: Tableau 2021.1
+## Tested with Tableau Server/Tableau Online version: Tableau 2021.3
 #####
-
 query dashboards{ 
   dashboards(filter:{name:"Pandemic"}) {
     id
