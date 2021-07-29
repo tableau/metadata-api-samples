@@ -3,7 +3,7 @@
 ## that use embedded extract data sources. You can use the secondary 
 ## query, usig the IDs returned form from the primary query, to 
 ## identify workbooks that use those embedded extract data sources.
-## Tableau Server/Tableau Online version: Tableau 2021.1 
+## Tested with Tableau Server/Tableau Online version: Tableau 2021.1 
 #####
 
 ### Primary query
