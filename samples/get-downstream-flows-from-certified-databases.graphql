@@ -2,7 +2,7 @@
 ## get-downstream-flows-from-certified-datbases: The primary query returns a list of certified databases 
 ## and their downstream flows. The secondary query returns a list of certified data sources and their
 ## downstream flows.
-## Tableau Server/Tableau Online version: Tableau 2021.1
+## Tested with Tableau Server/Tableau Online version: Tableau 2021.1
 #####
 
 ### Primary query
