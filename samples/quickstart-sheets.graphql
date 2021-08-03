@@ -1,0 +1,21 @@
+#####
+## quickstart-sheets: A query about sheets.
+## Tested with Tableau Server/Tableau Online version: Tableau 2021.3
+#####
+query sheets{
+  sheets {
+    id
+    luid
+    name
+    path
+    createdAt
+    updatedAt
+    index
+    workbook {
+      luid
+    }
+    containedInDashboards {
+      luid
+    }
+  }
+}
